@@ -11,10 +11,10 @@ const Board = ({ board, playingAsWhite }: Props) => {
   return (
     <>
       <h2>Board</h2>
-      <section className="grid grid-rows-8 grid-cols-8">
+      <section className="grid grid-rows-8 grid-cols-8 w-3/5 aspect-square">
         {board.squares.map((square: SquareModel) => (
           <div
-            className={`col-start-${
+            className={`w-full h-full col-start-${
               playingAsWhite ? square.column + 1 : 8 - square.column
             } row-start-${playingAsWhite ? 8 - square.row : square.row + 1}`}
           >
