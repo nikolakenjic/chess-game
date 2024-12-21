@@ -1,4 +1,5 @@
 import SquareModel from '../../models/SquareModel';
+import { getPieceIcon } from '../../piece-service';
 import {
   getSquareCoordinates,
   isLightSquare,
@@ -16,6 +17,9 @@ const Square = ({ square }: Props) => {
       }`}
     >
       <span>{getSquareCoordinates(square)}</span>
+      {square.piece && (
+        <i className={`fa-solid ${getPieceIcon(square.piece)}`}></i>
+      )}
     </div>
   );
 };
