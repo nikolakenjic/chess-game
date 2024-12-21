@@ -1,9 +1,11 @@
+import { PlayerColor } from '../../models/PlayerModel';
 import SquareModel from '../../models/SquareModel';
 import { getPieceIcon } from '../../piece-service';
 import {
   getSquareCoordinates,
   isLightSquare,
 } from '../../services/square-service';
+import './square.css';
 
 interface Props {
   square: SquareModel;
@@ -18,7 +20,13 @@ const Square = ({ square }: Props) => {
     >
       <span>{getSquareCoordinates(square)}</span>
       {square.piece && (
-        <i className={`fa-solid ${getPieceIcon(square.piece)}`}></i>
+        <i
+          className={`fa-solid ${getPieceIcon(square.piece)} ${
+            square.piece.color === PlayerColor.WHITE
+              ? 'text-white icon-shadow-black'
+              : 'text-black icon-shadow-white'
+          }`}
+        ></i>
       )}
     </div>
   );
