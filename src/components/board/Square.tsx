@@ -52,7 +52,15 @@ const Square = ({
         </span>
       )}
 
-      {showAsValidMove && <span className="bg-gray-400 w-4 h-4 rounded-full" />}
+      {showAsValidMove && (
+        <span
+          className={`rounded-full ${
+            square.piece
+              ? 'w-12 h-12 border-2 border-gray-400 absolute'
+              : 'bg-gray-400 w-4 h-4'
+          }`}
+        />
+      )}
 
       {square.piece && (
         <i

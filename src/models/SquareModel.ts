@@ -1,3 +1,4 @@
+import { CoordinateModel } from './CoordinateModel';
 import PieceModel from './PieceModel';
 
 const columnNotation: Record<number, string> = {
@@ -12,13 +13,11 @@ const columnNotation: Record<number, string> = {
 };
 
 export default class SquareModel {
-  readonly row: number;
-  readonly column: number;
+  coordinates: CoordinateModel;
   piece: PieceModel;
 
   constructor(row: number, column: number) {
-    this.row = row;
-    this.column = column;
+    this.coordinates = { row, column };
   }
 
   setPiece(piece: PieceModel): void {
@@ -26,14 +25,14 @@ export default class SquareModel {
   }
 
   getColumnCoordinates(): string {
-    return `${columnNotation[this.column]}`;
+    return `${columnNotation[this.coordinates.column]}`;
   }
 
   getRowCoordinates(): string {
-    return `${this.row + 1}`;
+    return `${this.coordinates.row + 1}`;
   }
 
   isLightSquare(): boolean {
-    return (this.column + this.row) % 2 !== 0;
+    return (this.coordinates.column + this.coordinates.row) % 2 !== 0;
   }
 }

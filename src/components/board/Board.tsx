@@ -3,6 +3,8 @@ import BoardModel from '../../models/BoardModel';
 import SquareModel from '../../models/SquareModel';
 import { PlayerColor } from '../../models/PlayerModel';
 import Square from './Square';
+import { CoordinateModel } from '../../models/CoordinateModel';
+import { getValidMoves } from '../../services/move-service';
 
 interface Props {
   board: BoardModel;
@@ -14,21 +16,16 @@ const Board = ({ board, playerTurn, playingAsWhite }: Props) => {
   const [selectedSquare, setSelectedSquare] = useState<SquareModel | null>(
     null
   );
-  const validMoves: Array<SquareModel> = useMemo(() => {
-    if (!selectedSquare) return [];
-    return board.squares.filter(
-      (boardSquare) =>
-        boardSquare.column !== selectedSquare?.column ||
-        boardSquare.row !== selectedSquare?.row
-    );
-  }, [board, selectedSquare]);
+  const validMoves: Array<CoordinateModel> = useMemo(() => {
+    return getValidMoves(selectedSquare);
+  }, [selectedSquare]);
 
   const isValidMove = useCallback(
     (square: SquareModel): boolean => {
       return validMoves.some(
-        (validMoveSquare) =>
-          validMoveSquare.column === square.column &&
-          validMoveSquare.row === square.row
+        (validMoveCoordinates) =>
+          validMoveCoordinates.column === square.coordinates.column &&
+          validMoveCoordinates.row === square.coordinates.row
       );
     },
     [validMoves]
@@ -40,18 +37,24 @@ const Board = ({ board, playerTurn, playingAsWhite }: Props) => {
         {board.squares.map((square: SquareModel) => (
           <div
             className={`w-full h-full col-start-${
-              playingAsWhite ? square.column + 1 : 8 - square.column
-            } row-start-${playingAsWhite ? 8 - square.row : square.row + 1}`}
-            key={`square_${square.row}_${square.column}`}
+              playingAsWhite
+                ? square.coordinates.column + 1
+                : 8 - square.coordinates.column
+            } row-start-${
+              playingAsWhite
+                ? 8 - square.coordinates.row
+                : square.coordinates.row + 1
+            }`}
+            key={`square_${square.coordinates.row}_${square.coordinates.column}`}
           >
             <Square
               square={square}
-              showCoordinatesColumn={square.row === 0}
-              showCoordinatesRow={square.column === 0}
+              showCoordinatesColumn={square.coordinates.row === 0}
+              showCoordinatesRow={square.coordinates.column === 0}
               showAsValidMove={isValidMove(square)}
               isSelected={
-                square.row === selectedSquare?.row &&
-                square.column === selectedSquare?.column
+                square.coordinates.row === selectedSquare?.coordinates.row &&
+                square.coordinates.column === selectedSquare?.coordinates.column
               }
               canSelect={
                 square.piece?.color === playerTurn || isValidMove(square)
