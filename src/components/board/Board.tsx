@@ -49,6 +49,7 @@ const Board = ({ board, playerTurn, playingAsWhite }: Props) => {
               square={square}
               showCoordinatesColumn={square.row === 0}
               showCoordinatesRow={square.column === 0}
+              showAsValidMove={isValidMove(square)}
               isSelected={
                 square.row === selectedSquare?.row &&
                 square.column === selectedSquare?.column
