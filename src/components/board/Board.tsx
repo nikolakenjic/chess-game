@@ -15,13 +15,12 @@ const Board = ({ board, playerTurn, playingAsWhite }: Props) => {
     null
   );
   const validMoves: Array<SquareModel> = useMemo(() => {
-    return board.squares.filter((boardSquare) => {
-      if (!selectedSquare) return [];
-      return (
+    if (!selectedSquare) return [];
+    return board.squares.filter(
+      (boardSquare) =>
         boardSquare.column !== selectedSquare?.column ||
         boardSquare.row !== selectedSquare?.row
-      );
-    });
+    );
   }, [board, selectedSquare]);
 
   const isValidMove = useCallback(
