@@ -14,13 +14,14 @@ const columnNotation: Record<number, string> = {
 
 export default class SquareModel {
   coordinates: CoordinateModel;
-  piece: PieceModel;
+  piece: PieceModel | null;
 
   constructor(row: number, column: number) {
     this.coordinates = { row, column };
+    this.piece = null;
   }
 
-  setPiece(piece: PieceModel): void {
+  setPiece(piece: PieceModel | null): void {
     this.piece = piece;
   }
 

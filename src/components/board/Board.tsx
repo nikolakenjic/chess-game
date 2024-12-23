@@ -10,9 +10,10 @@ interface Props {
   board: BoardModel;
   playerTurn: PlayerColor;
   playingAsWhite: boolean;
+  movePiece: (currentSquare: SquareModel, finalSquare: SquareModel) => void;
 }
 
-const Board = ({ board, playerTurn, playingAsWhite }: Props) => {
+const Board = ({ board, playerTurn, playingAsWhite, movePiece }: Props) => {
   const [selectedSquare, setSelectedSquare] = useState<SquareModel | null>(
     null
   );
@@ -40,11 +41,10 @@ const Board = ({ board, playerTurn, playingAsWhite }: Props) => {
 
   const selectSquare = (square: SquareModel) => {
     if (selectedSquare) {
-      if (isSameSelectedSquare(square)) {
-        setSelectedSquare(null);
-      } else {
-        console.log('One move');
+      if (!isSameSelectedSquare(square)) {
+        movePiece(selectedSquare, square);
       }
+      setSelectedSquare(null);
     } else {
       setSelectedSquare(square);
     }

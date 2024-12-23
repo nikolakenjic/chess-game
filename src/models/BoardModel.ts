@@ -1,4 +1,5 @@
 import { initialPiecePositions } from '../constants/initial-piece-positions';
+import { CoordinateModel } from './CoordinateModel';
 import PieceModel from './PieceModel';
 import SquareModel from './SquareModel';
 
@@ -19,4 +20,16 @@ export default class BoardModel {
       }
     }
   }
+
+  updateSquarePiece = (
+    coordinate: CoordinateModel,
+    piece: PieceModel | null
+  ): void => {
+    const squareIndex = this.squares.findIndex(
+      (square) =>
+        square.coordinates.column === coordinate.column &&
+        square.coordinates.row === coordinate.row
+    );
+    this.squares[squareIndex].setPiece(piece);
+  };
 }
