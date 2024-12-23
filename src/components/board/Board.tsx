@@ -31,6 +31,25 @@ const Board = ({ board, playerTurn, playingAsWhite }: Props) => {
     [validMoves]
   );
 
+  const isSameSelectedSquare = (square: SquareModel): boolean => {
+    return (
+      square.coordinates.row === selectedSquare?.coordinates.row &&
+      square.coordinates.column === selectedSquare?.coordinates.column
+    );
+  };
+
+  const selectSquare = (square: SquareModel) => {
+    if (selectedSquare) {
+      if (isSameSelectedSquare(square)) {
+        setSelectedSquare(null);
+      } else {
+        console.log('One move');
+      }
+    } else {
+      setSelectedSquare(square);
+    }
+  };
+
   return (
     <>
       <section className="grid grid-rows-8 grid-cols-8 max-w-3xl w-3/4 aspect-square my-4 mx-auto border shadow">
@@ -59,7 +78,7 @@ const Board = ({ board, playerTurn, playingAsWhite }: Props) => {
               canSelect={
                 square.piece?.color === playerTurn || isValidMove(square)
               }
-              select={setSelectedSquare}
+              select={selectSquare}
             />
           </div>
         ))}

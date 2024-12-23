@@ -10,7 +10,7 @@ interface Props {
   showAsValidMove?: boolean;
   isSelected?: boolean;
   canSelect?: boolean;
-  select: (square: SquareModel | null) => void;
+  select: (square: SquareModel) => void;
 }
 
 const Square = ({
@@ -31,7 +31,7 @@ const Square = ({
 
   const onClick = () => {
     if (canSelect) {
-      select(isSelected ? null : square);
+      select(square);
     }
   };
 
