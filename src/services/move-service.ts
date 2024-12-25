@@ -1,9 +1,11 @@
+import BoardModel from '../models/BoardModel';
 import { CoordinateModel } from '../models/CoordinateModel';
 import { PieceType } from '../models/PieceModel';
 import { PlayerColor } from '../models/PlayerModel';
 import SquareModel from '../models/SquareModel';
 
 export const getValidMoves = (
+  board: BoardModel,
   square: SquareModel | null
 ): Array<CoordinateModel> => {
   if (!square || !square?.piece) return [];
@@ -31,9 +33,34 @@ export const getValidMoves = (
     square.piece.type === PieceType.ROOK ||
     square.piece.type === PieceType.QUEEN
   ) {
-    for (let i = 0; i < 8; i++) {
-      validMoves.push({ row, column: i });
-      validMoves.push({ row: i, column });
+    // Move within row
+    for (let i = column + 1; i < 8; i++) {
+      const targetSquare = board.squares.find(
+        (item) => item.coordinates.row === row && item.coordinates.column === i
+      );
+      if (targetSquare?.piece) {
+        if (targetSquare?.piece.color !== square.piece.color) {
+          validMoves.push({ row, column: i });
+        }
+        break;
+      } else {
+        validMoves.push({ row, column: i });
+      }
+    }
+    // Move within column
+    for (let i = row + 1; i < 8; i++) {
+      const targetSquare = board.squares.find(
+        (item) =>
+          item.coordinates.row === i && item.coordinates.column === column
+      );
+      if (targetSquare?.piece) {
+        if (targetSquare?.piece.color !== square.piece.color) {
+          validMoves.push({ row: i, column });
+        }
+        break;
+      } else {
+        validMoves.push({ row: i, column });
+      }
     }
   }
 
