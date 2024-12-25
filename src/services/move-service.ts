@@ -35,61 +35,56 @@ export const getValidMoves = (
   ) {
     // Move within row
     for (let i = column + 1; i < 8; i++) {
-      const targetSquare = board.squares.find(
-        (item) => item.coordinates.row === row && item.coordinates.column === i
-      );
+      const targetCoordinate = { row, column: i };
+      const targetSquare = board.getSquareOnCoordinate(targetCoordinate);
       if (targetSquare?.piece) {
         if (targetSquare?.piece.color !== square.piece.color) {
-          validMoves.push({ row, column: i });
+          validMoves.push(targetCoordinate);
         }
         break;
       } else {
-        validMoves.push({ row, column: i });
+        validMoves.push(targetCoordinate);
       }
     }
 
     for (let i = column - 1; i >= 0; i--) {
-      const targetSquare = board.squares.find(
-        (item) => item.coordinates.row === row && item.coordinates.column === i
-      );
+      const targetCoordinate = { row, column: i };
+      const targetSquare = board.getSquareOnCoordinate(targetCoordinate);
+
       if (targetSquare?.piece) {
         if (targetSquare?.piece.color !== square.piece.color) {
-          validMoves.push({ row, column: i });
+          validMoves.push(targetCoordinate);
         }
         break;
       } else {
-        validMoves.push({ row, column: i });
+        validMoves.push(targetCoordinate);
       }
     }
 
     // Move within column
     for (let i = row + 1; i < 8; i++) {
-      const targetSquare = board.squares.find(
-        (item) =>
-          item.coordinates.row === i && item.coordinates.column === column
-      );
+      const targetCoordinate = { row: i, column };
+      const targetSquare = board.getSquareOnCoordinate(targetCoordinate);
       if (targetSquare?.piece) {
         if (targetSquare?.piece.color !== square.piece.color) {
-          validMoves.push({ row: i, column });
+          validMoves.push(targetCoordinate);
         }
         break;
       } else {
-        validMoves.push({ row: i, column });
+        validMoves.push(targetCoordinate);
       }
     }
 
     for (let i = row - 1; i >= 0; i--) {
-      const targetSquare = board.squares.find(
-        (item) =>
-          item.coordinates.row === i && item.coordinates.column === column
-      );
+      const targetCoordinate = { row: i, column };
+      const targetSquare = board.getSquareOnCoordinate(targetCoordinate);
       if (targetSquare?.piece) {
         if (targetSquare?.piece.color !== square.piece.color) {
-          validMoves.push({ row: i, column });
+          validMoves.push(targetCoordinate);
         }
         break;
       } else {
-        validMoves.push({ row: i, column });
+        validMoves.push(targetCoordinate);
       }
     }
   }

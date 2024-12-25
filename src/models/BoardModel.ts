@@ -1,4 +1,5 @@
 import { initialPiecePositions } from '../constants/initial-piece-positions';
+import { isSameCoordinate } from '../services/coordinate-service';
 import { CoordinateModel } from './CoordinateModel';
 import PieceModel from './PieceModel';
 import SquareModel from './SquareModel';
@@ -31,5 +32,13 @@ export default class BoardModel {
         square.coordinates.row === coordinate.row
     );
     this.squares[squareIndex].setPiece(piece);
+  };
+
+  getSquareOnCoordinate = (
+    coordinate: CoordinateModel
+  ): SquareModel | undefined => {
+    return this.squares.find((item) =>
+      isSameCoordinate(item.coordinates, coordinate)
+    );
   };
 }
