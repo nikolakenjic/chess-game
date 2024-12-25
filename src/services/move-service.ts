@@ -47,8 +47,38 @@ export const getValidMoves = (
         validMoves.push({ row, column: i });
       }
     }
+
+    for (let i = column - 1; i >= 0; i--) {
+      const targetSquare = board.squares.find(
+        (item) => item.coordinates.row === row && item.coordinates.column === i
+      );
+      if (targetSquare?.piece) {
+        if (targetSquare?.piece.color !== square.piece.color) {
+          validMoves.push({ row, column: i });
+        }
+        break;
+      } else {
+        validMoves.push({ row, column: i });
+      }
+    }
+
     // Move within column
     for (let i = row + 1; i < 8; i++) {
+      const targetSquare = board.squares.find(
+        (item) =>
+          item.coordinates.row === i && item.coordinates.column === column
+      );
+      if (targetSquare?.piece) {
+        if (targetSquare?.piece.color !== square.piece.color) {
+          validMoves.push({ row: i, column });
+        }
+        break;
+      } else {
+        validMoves.push({ row: i, column });
+      }
+    }
+
+    for (let i = row - 1; i >= 0; i--) {
       const targetSquare = board.squares.find(
         (item) =>
           item.coordinates.row === i && item.coordinates.column === column
