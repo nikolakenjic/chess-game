@@ -4,6 +4,35 @@ import { PieceType } from '../models/PieceModel';
 import { PlayerColor } from '../models/PlayerModel';
 import SquareModel from '../models/SquareModel';
 
+interface MoveCheck {
+  move: CoordinateModel | null;
+  shouldBreak: boolean;
+}
+
+const checkValidMove = (
+  board: BoardModel,
+  square: SquareModel,
+  targetCoordinate: CoordinateModel
+): MoveCheck => {
+  const moveCheck: MoveCheck = {
+    move: null,
+    shouldBreak: false,
+  };
+
+  const targetSquare = board.getSquareOnCoordinate(targetCoordinate);
+
+  if (targetSquare?.piece) {
+    if (targetSquare?.piece.color !== square.piece?.color) {
+      moveCheck.move = targetCoordinate;
+    }
+    moveCheck.shouldBreak = true;
+  } else {
+    moveCheck.move = targetCoordinate;
+  }
+
+  return moveCheck;
+};
+
 export const getValidMoves = (
   board: BoardModel,
   square: SquareModel | null
@@ -35,56 +64,47 @@ export const getValidMoves = (
   ) {
     // Move within row
     for (let i = column + 1; i < 8; i++) {
-      const targetCoordinate = { row, column: i };
-      const targetSquare = board.getSquareOnCoordinate(targetCoordinate);
-      if (targetSquare?.piece) {
-        if (targetSquare?.piece.color !== square.piece.color) {
-          validMoves.push(targetCoordinate);
-        }
+      const possibleMove = checkValidMove(board, square, { row, column: i });
+      if (possibleMove.move) {
+        validMoves.push(possibleMove.move);
+      }
+
+      if (possibleMove.shouldBreak) {
         break;
-      } else {
-        validMoves.push(targetCoordinate);
       }
     }
 
     for (let i = column - 1; i >= 0; i--) {
-      const targetCoordinate = { row, column: i };
-      const targetSquare = board.getSquareOnCoordinate(targetCoordinate);
+      const possibleMove = checkValidMove(board, square, { row, column: i });
+      if (possibleMove.move) {
+        validMoves.push(possibleMove.move);
+      }
 
-      if (targetSquare?.piece) {
-        if (targetSquare?.piece.color !== square.piece.color) {
-          validMoves.push(targetCoordinate);
-        }
+      if (possibleMove.shouldBreak) {
         break;
-      } else {
-        validMoves.push(targetCoordinate);
       }
     }
 
     // Move within column
     for (let i = row + 1; i < 8; i++) {
-      const targetCoordinate = { row: i, column };
-      const targetSquare = board.getSquareOnCoordinate(targetCoordinate);
-      if (targetSquare?.piece) {
-        if (targetSquare?.piece.color !== square.piece.color) {
-          validMoves.push(targetCoordinate);
-        }
+      const possibleMove = checkValidMove(board, square, { row: i, column });
+      if (possibleMove.move) {
+        validMoves.push(possibleMove.move);
+      }
+
+      if (possibleMove.shouldBreak) {
         break;
-      } else {
-        validMoves.push(targetCoordinate);
       }
     }
 
     for (let i = row - 1; i >= 0; i--) {
-      const targetCoordinate = { row: i, column };
-      const targetSquare = board.getSquareOnCoordinate(targetCoordinate);
-      if (targetSquare?.piece) {
-        if (targetSquare?.piece.color !== square.piece.color) {
-          validMoves.push(targetCoordinate);
-        }
+      const possibleMove = checkValidMove(board, square, { row: i, column });
+      if (possibleMove.move) {
+        validMoves.push(possibleMove.move);
+      }
+
+      if (possibleMove.shouldBreak) {
         break;
-      } else {
-        validMoves.push(targetCoordinate);
       }
     }
   }
