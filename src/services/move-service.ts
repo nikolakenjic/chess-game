@@ -9,6 +9,14 @@ interface MoveCheck {
   shouldBreak: boolean;
 }
 
+interface RowColumnValidMoveCheck {
+  startPos: number;
+  endPos: number;
+  increment: number;
+  updateRow: boolean;
+  updateColumn: boolean;
+}
+
 const checkValidMove = (
   board: BoardModel,
   square: SquareModel,
@@ -31,6 +39,46 @@ const checkValidMove = (
   }
 
   return moveCheck;
+};
+
+const getValidMovesForRowAndColumn = (
+  board: BoardModel,
+  square: SquareModel,
+  {
+    startPos,
+    endPos,
+    increment,
+    updateRow,
+    updateColumn,
+  }: RowColumnValidMoveCheck
+): Array<CoordinateModel> => {
+  const validMoves: Array<CoordinateModel> = [];
+  const { row, column } = square.coordinates;
+
+  for (
+    let i = startPos;
+    increment > 0 ? i <= endPos : i >= endPos;
+    i += increment
+  ) {
+    const newCoordinates: CoordinateModel = { row, column };
+    if (updateRow) {
+      newCoordinates.row = i;
+    }
+    if (updateColumn) {
+      newCoordinates.column = i;
+    }
+
+    const possibleMove = checkValidMove(board, square, newCoordinates);
+    if (possibleMove.move) {
+      validMoves.push(possibleMove.move);
+    }
+
+    if (possibleMove.shouldBreak) {
+      break;
+    }
+  }
+
+  return validMoves;
 };
 
 export const getValidMoves = (
@@ -63,50 +111,88 @@ export const getValidMoves = (
     square.piece.type === PieceType.QUEEN
   ) {
     // Move within row
-    for (let i = column + 1; i < 8; i++) {
-      const possibleMove = checkValidMove(board, square, { row, column: i });
-      if (possibleMove.move) {
-        validMoves.push(possibleMove.move);
-      }
+    validMoves.push(
+      ...getValidMovesForRowAndColumn(board, square, {
+        startPos: column + 1,
+        endPos: 7,
+        increment: 1,
+        updateRow: false,
+        updateColumn: true,
+      })
+    );
+    validMoves.push(
+      ...getValidMovesForRowAndColumn(board, square, {
+        startPos: column - 1,
+        endPos: 0,
+        increment: -1,
+        updateRow: false,
+        updateColumn: true,
+      })
+    );
 
-      if (possibleMove.shouldBreak) {
-        break;
-      }
-    }
+    // for (let i = column + 1; i <= 7; i++) {
+    //   const possibleMove = checkValidMove(board, square, { row, column: i });
+    //   if (possibleMove.move) {
+    //     validMoves.push(possibleMove.move);
+    //   }
 
-    for (let i = column - 1; i >= 0; i--) {
-      const possibleMove = checkValidMove(board, square, { row, column: i });
-      if (possibleMove.move) {
-        validMoves.push(possibleMove.move);
-      }
+    //   if (possibleMove.shouldBreak) {
+    //     break;
+    //   }
+    // }
 
-      if (possibleMove.shouldBreak) {
-        break;
-      }
-    }
+    // for (let i = column - 1; i >= 0; i--) {
+    //   const possibleMove = checkValidMove(board, square, { row, column: i });
+    //   if (possibleMove.move) {
+    //     validMoves.push(possibleMove.move);
+    //   }
+
+    //   if (possibleMove.shouldBreak) {
+    //     break;
+    //   }
+    // }
 
     // Move within column
-    for (let i = row + 1; i < 8; i++) {
-      const possibleMove = checkValidMove(board, square, { row: i, column });
-      if (possibleMove.move) {
-        validMoves.push(possibleMove.move);
-      }
+    validMoves.push(
+      ...getValidMovesForRowAndColumn(board, square, {
+        startPos: row + 1,
+        endPos: 7,
+        increment: 1,
+        updateRow: true,
+        updateColumn: false,
+      })
+    );
+    validMoves.push(
+      ...getValidMovesForRowAndColumn(board, square, {
+        startPos: row - 1,
+        endPos: 0,
+        increment: -1,
+        updateRow: true,
+        updateColumn: false,
+      })
+    );
 
-      if (possibleMove.shouldBreak) {
-        break;
-      }
-    }
+    // for (let i = row + 1; i <= 7; i++) {
+    //   const possibleMove = checkValidMove(board, square, { row: i, column });
+    //   if (possibleMove.move) {
+    //     validMoves.push(possibleMove.move);
+    //   }
 
-    for (let i = row - 1; i >= 0; i--) {
-      const possibleMove = checkValidMove(board, square, { row: i, column });
-      if (possibleMove.move) {
-        validMoves.push(possibleMove.move);
-      }
+    //   if (possibleMove.shouldBreak) {
+    //     break;
+    //   }
+    // }
 
-      if (possibleMove.shouldBreak) {
-        break;
-      }
-    }
+    // for (let i = row - 1; i >= 0; i--) {
+    //   const possibleMove = checkValidMove(board, square, { row: i, column });
+    //   if (possibleMove.move) {
+    //     validMoves.push(possibleMove.move);
+    //   }
+
+    //   if (possibleMove.shouldBreak) {
+    //     break;
+    //   }
+    // }
   }
 
   //   KNIGHT *********************************************************************
@@ -161,9 +247,9 @@ export const getValidMoves = (
   return validMoves.filter(
     (move) =>
       move.row >= 0 &&
-      move.row < 8 &&
+      move.row <= 7 &&
       move.column >= 0 &&
-      move.column < 8 &&
+      move.column <= 7 &&
       (move.row !== row || move.column !== column)
   );
 
