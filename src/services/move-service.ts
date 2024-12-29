@@ -13,14 +13,16 @@ interface RowColumnValidMoveCheck {
   startPos: number;
   endPos: number;
   increment: number;
-  updateRow: boolean;
-  updateColumn: boolean;
+  rowIncrement: number;
+  columnIncrement: number;
 }
 
 const checkValidMove = (
   board: BoardModel,
   square: SquareModel,
-  targetCoordinate: CoordinateModel
+  targetCoordinate: CoordinateModel,
+  blockIfOppositeColor = false,
+  blockIsEmpty = false
 ): MoveCheck => {
   const moveCheck: MoveCheck = {
     move: null,
@@ -30,11 +32,14 @@ const checkValidMove = (
   const targetSquare = board.getSquareOnCoordinate(targetCoordinate);
 
   if (targetSquare?.piece) {
-    if (targetSquare?.piece.color !== square.piece?.color) {
+    if (
+      targetSquare?.piece.color !== square.piece?.color &&
+      !blockIfOppositeColor
+    ) {
       moveCheck.move = targetCoordinate;
     }
     moveCheck.shouldBreak = true;
-  } else {
+  } else if (!blockIsEmpty) {
     moveCheck.move = targetCoordinate;
   }
 
@@ -48,8 +53,8 @@ const getValidMovesForRowAndColumn = (
     startPos,
     endPos,
     increment,
-    updateRow,
-    updateColumn,
+    rowIncrement,
+    columnIncrement,
   }: RowColumnValidMoveCheck
 ): Array<CoordinateModel> => {
   const validMoves: Array<CoordinateModel> = [];
@@ -60,12 +65,14 @@ const getValidMovesForRowAndColumn = (
     increment > 0 ? i <= endPos : i >= endPos;
     i += increment
   ) {
+    const count = Math.abs(i - startPos) + 1;
     const newCoordinates: CoordinateModel = { row, column };
-    if (updateRow) {
-      newCoordinates.row = i;
+
+    if (rowIncrement) {
+      newCoordinates.row = row + count * rowIncrement;
     }
-    if (updateColumn) {
-      newCoordinates.column = i;
+    if (columnIncrement) {
+      newCoordinates.column = column + count * columnIncrement;
     }
 
     const possibleMove = checkValidMove(board, square, newCoordinates);
@@ -87,20 +94,64 @@ export const getValidMoves = (
 ): Array<CoordinateModel> => {
   if (!square || !square?.piece) return [];
 
-  const validMoves: Array<CoordinateModel> = [];
+  const validMoves: Array<CoordinateModel | null> = [];
   const { row, column } = square.coordinates;
 
   //   PAWN ******************************************************************
   if (square.piece.type === PieceType.PAWN) {
     if (square.piece.color === PlayerColor.WHITE) {
-      validMoves.push({ row: row + 1, column });
+      validMoves.push(
+        checkValidMove(board, square, { row: row + 1, column }, true).move
+      );
+      validMoves.push(
+        checkValidMove(
+          board,
+          square,
+          { row: row + 1, column: column + 1 },
+          false,
+          true
+        ).move
+      );
+      validMoves.push(
+        checkValidMove(
+          board,
+          square,
+          { row: row + 1, column: column - 1 },
+          false,
+          true
+        ).move
+      );
       if (row === 1) {
-        validMoves.push({ row: row + 2, column });
+        validMoves.push(
+          checkValidMove(board, square, { row: row + 2, column }, true).move
+        );
       }
     } else {
-      validMoves.push({ row: row - 1, column });
+      validMoves.push(
+        checkValidMove(board, square, { row: row - 1, column }, true).move
+      );
+      validMoves.push(
+        checkValidMove(
+          board,
+          square,
+          { row: row - 1, column: column - 1 },
+          false,
+          true
+        ).move
+      );
+      validMoves.push(
+        checkValidMove(
+          board,
+          square,
+          { row: row - 1, column: column + 1 },
+          false,
+          true
+        ).move
+      );
       if (row === 6) {
-        validMoves.push({ row: row - 2, column });
+        validMoves.push(
+          checkValidMove(board, square, { row: row - 2, column }, true).move
+        );
       }
     }
   }
@@ -116,8 +167,8 @@ export const getValidMoves = (
         startPos: column + 1,
         endPos: 7,
         increment: 1,
-        updateRow: false,
-        updateColumn: true,
+        rowIncrement: 0,
+        columnIncrement: 1,
       })
     );
     validMoves.push(
@@ -125,32 +176,10 @@ export const getValidMoves = (
         startPos: column - 1,
         endPos: 0,
         increment: -1,
-        updateRow: false,
-        updateColumn: true,
+        rowIncrement: 0,
+        columnIncrement: -1,
       })
     );
-
-    // for (let i = column + 1; i <= 7; i++) {
-    //   const possibleMove = checkValidMove(board, square, { row, column: i });
-    //   if (possibleMove.move) {
-    //     validMoves.push(possibleMove.move);
-    //   }
-
-    //   if (possibleMove.shouldBreak) {
-    //     break;
-    //   }
-    // }
-
-    // for (let i = column - 1; i >= 0; i--) {
-    //   const possibleMove = checkValidMove(board, square, { row, column: i });
-    //   if (possibleMove.move) {
-    //     validMoves.push(possibleMove.move);
-    //   }
-
-    //   if (possibleMove.shouldBreak) {
-    //     break;
-    //   }
-    // }
 
     // Move within column
     validMoves.push(
@@ -158,8 +187,8 @@ export const getValidMoves = (
         startPos: row + 1,
         endPos: 7,
         increment: 1,
-        updateRow: true,
-        updateColumn: false,
+        rowIncrement: 1,
+        columnIncrement: 0,
       })
     );
     validMoves.push(
@@ -167,47 +196,41 @@ export const getValidMoves = (
         startPos: row - 1,
         endPos: 0,
         increment: -1,
-        updateRow: true,
-        updateColumn: false,
+        rowIncrement: -1,
+        columnIncrement: 0,
       })
     );
-
-    // for (let i = row + 1; i <= 7; i++) {
-    //   const possibleMove = checkValidMove(board, square, { row: i, column });
-    //   if (possibleMove.move) {
-    //     validMoves.push(possibleMove.move);
-    //   }
-
-    //   if (possibleMove.shouldBreak) {
-    //     break;
-    //   }
-    // }
-
-    // for (let i = row - 1; i >= 0; i--) {
-    //   const possibleMove = checkValidMove(board, square, { row: i, column });
-    //   if (possibleMove.move) {
-    //     validMoves.push(possibleMove.move);
-    //   }
-
-    //   if (possibleMove.shouldBreak) {
-    //     break;
-    //   }
-    // }
   }
 
   //   KNIGHT *********************************************************************
   if (square.piece.type === PieceType.KNIGHT) {
     // Vertical
-    validMoves.push({ row: row + 2, column: column + 1 });
-    validMoves.push({ row: row + 2, column: column - 1 });
-    validMoves.push({ row: row - 2, column: column + 1 });
-    validMoves.push({ row: row - 2, column: column - 1 });
+    validMoves.push(
+      checkValidMove(board, square, { row: row + 2, column: column + 1 }).move
+    );
+    validMoves.push(
+      checkValidMove(board, square, { row: row + 2, column: column - 1 }).move
+    );
+    validMoves.push(
+      checkValidMove(board, square, { row: row - 2, column: column + 1 }).move
+    );
+    validMoves.push(
+      checkValidMove(board, square, { row: row - 2, column: column - 1 }).move
+    );
 
     // Horizontal
-    validMoves.push({ row: row + 1, column: column + 2 });
-    validMoves.push({ row: row + 1, column: column - 2 });
-    validMoves.push({ row: row - 1, column: column + 2 });
-    validMoves.push({ row: row - 1, column: column - 2 });
+    validMoves.push(
+      checkValidMove(board, square, { row: row + 1, column: column + 2 }).move
+    );
+    validMoves.push(
+      checkValidMove(board, square, { row: row + 1, column: column - 2 }).move
+    );
+    validMoves.push(
+      checkValidMove(board, square, { row: row - 1, column: column + 2 }).move
+    );
+    validMoves.push(
+      checkValidMove(board, square, { row: row - 1, column: column - 2 }).move
+    );
 
     // Validate Moves
     validMoves.push(...validMoves);
@@ -218,12 +241,46 @@ export const getValidMoves = (
     square.piece.type === PieceType.BISHOP ||
     square.piece.type === PieceType.QUEEN
   ) {
-    for (let i = 0; i < 8; i++) {
-      validMoves.push({ row: row + i, column: column - i });
-      validMoves.push({ row: row + i, column: column + i });
-      validMoves.push({ row: row - i, column: column - i });
-      validMoves.push({ row: row - i, column: column + i });
-    }
+    validMoves.push(
+      ...getValidMovesForRowAndColumn(board, square, {
+        startPos: row + 1,
+        endPos: 7,
+        increment: 1,
+        rowIncrement: 1,
+        columnIncrement: -1,
+      })
+    );
+
+    validMoves.push(
+      ...getValidMovesForRowAndColumn(board, square, {
+        startPos: row + 1,
+        endPos: 7,
+        increment: 1,
+        rowIncrement: 1,
+        columnIncrement: 1,
+      })
+    );
+
+    validMoves.push(
+      ...getValidMovesForRowAndColumn(board, square, {
+        startPos: row - 1,
+        endPos: 0,
+        increment: -1,
+        rowIncrement: -1,
+        columnIncrement: -1,
+      })
+    );
+
+    validMoves.push(
+      ...getValidMovesForRowAndColumn(board, square, {
+        startPos: row - 1,
+        endPos: 0,
+        increment: -1,
+        rowIncrement: -1,
+        columnIncrement: 1,
+      })
+    );
+
     // Validate Moves
     validMoves.push(...validMoves);
   }
@@ -231,34 +288,43 @@ export const getValidMoves = (
   //   KING *********************************************************************
   if (square.piece.type === PieceType.KING) {
     // Left right top bottom
-    validMoves.push({ row, column: column + 1 });
-    validMoves.push({ row, column: column - 1 });
-    validMoves.push({ row: row + 1, column });
-    validMoves.push({ row: row - 1, column });
+    validMoves.push(
+      checkValidMove(board, square, { row, column: column + 1 }).move
+    );
+    validMoves.push(
+      checkValidMove(board, square, { row, column: column - 1 }).move
+    );
+    validMoves.push(
+      checkValidMove(board, square, { row: row + 1, column }).move
+    );
+    validMoves.push(
+      checkValidMove(board, square, { row: row - 1, column }).move
+    );
 
     // Diagonal +- 1
-    validMoves.push({ row: row + 1, column: column + 1 });
-    validMoves.push({ row: row - 1, column: column + 1 });
-    validMoves.push({ row: row + 1, column: column - 1 });
-    validMoves.push({ row: row - 1, column: column - 1 });
+    validMoves.push(
+      checkValidMove(board, square, { row: row + 1, column: column + 1 }).move
+    );
+    validMoves.push(
+      checkValidMove(board, square, { row: row - 1, column: column + 1 }).move
+    );
+    validMoves.push(
+      checkValidMove(board, square, { row: row + 1, column: column - 1 }).move
+    );
+    validMoves.push(
+      checkValidMove(board, square, { row: row - 1, column: column - 1 }).move
+    );
   }
 
   //   RETURN VALUE
-  return validMoves.filter(
-    (move) =>
-      move.row >= 0 &&
-      move.row <= 7 &&
-      move.column >= 0 &&
-      move.column <= 7 &&
-      (move.row !== row || move.column !== column)
-  );
-
-  //    return board.squares
-  //         .filter(
-  //           (boardSquare) =>
-  //             boardSquare.coordinates.column !==
-  //               selectedSquare?.coordinates.column ||
-  //             boardSquare.coordinates.row !== selectedSquare?.coordinates.row
-  //         )
-  //         .map((boardSquare) => boardSquare.coordinates);
+  return validMoves
+    .filter((move) => !!move)
+    .filter(
+      (move) =>
+        move.row >= 0 &&
+        move.row <= 7 &&
+        move.column >= 0 &&
+        move.column <= 7 &&
+        (move.row !== row || move.column !== column)
+    );
 };
