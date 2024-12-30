@@ -1,5 +1,5 @@
 import { CoordinateModel } from './CoordinateModel';
-import PieceModel from './PieceModel';
+import PieceModel from './piece/PieceModel';
 
 const columnNotation: Record<number, string> = {
   0: 'a',

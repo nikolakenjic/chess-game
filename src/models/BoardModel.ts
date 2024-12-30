@@ -1,7 +1,8 @@
 import { initialPiecePositions } from '../constants/initial-piece-positions';
+import { pieceClasses } from '../constants/piece-info';
 import { isSameCoordinate } from '../services/coordinate-service';
 import { CoordinateModel } from './CoordinateModel';
-import PieceModel from './PieceModel';
+import PieceModel from './piece/PieceModel';
 import SquareModel from './SquareModel';
 
 export default class BoardModel {
@@ -13,7 +14,7 @@ export default class BoardModel {
         const square = new SquareModel(row, column);
         initialPiecePositions.forEach((item) => {
           if (item.rows.includes(row) && item.columns.includes(column)) {
-            square.setPiece(new PieceModel(item.pieceType, item.playerColor));
+            square.setPiece(new pieceClasses[item.pieceType](item.playerColor));
           }
         });
 
