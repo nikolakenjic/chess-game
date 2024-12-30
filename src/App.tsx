@@ -3,21 +3,39 @@ import { PlayerColor } from './models/PlayerModel';
 import Board from './components/board/Board';
 import BoardModel from './models/BoardModel';
 import SquareModel from './models/SquareModel';
+import MoveModel from './models/MoveModel';
+import MoveHistory from './components/MoveHistory';
 
-function App() {
+const App = () => {
   const [board] = useState(new BoardModel());
+  const [moveHistoryList, setMoveHistoryList] = useState<Array<MoveModel>>([]);
   const [playerTurn, setPlayerTurn] = useState<PlayerColor>(PlayerColor.WHITE);
 
   const movePiece = (
     currentSquare: SquareModel,
     finalSquare: SquareModel
   ): void => {
-    board.updateSquarePiece(finalSquare.coordinates, currentSquare.piece);
-    board.updateSquarePiece(currentSquare.coordinates, null);
+    const { piece } = currentSquare;
 
-    setPlayerTurn((currentTurn) =>
-      currentTurn === PlayerColor.WHITE ? PlayerColor.BLACK : PlayerColor.WHITE
-    );
+    if (piece) {
+      board.updateSquarePiece(finalSquare.coordinates, piece);
+      board.updateSquarePiece(currentSquare.coordinates, null);
+      setMoveHistoryList((currentValue) => [
+        ...currentValue,
+        {
+          from: currentSquare.coordinates,
+          to: finalSquare.coordinates,
+          piece: piece.type,
+          color: playerTurn,
+        },
+      ]);
+
+      setPlayerTurn((currentTurn) =>
+        currentTurn === PlayerColor.WHITE
+          ? PlayerColor.BLACK
+          : PlayerColor.WHITE
+      );
+    }
   };
 
   return (
@@ -29,8 +47,9 @@ function App() {
         playerTurn={playerTurn}
         movePiece={movePiece}
       />
+      <MoveHistory moveList={moveHistoryList} />
     </>
   );
-}
+};
 
 export default App;
