@@ -11,6 +11,7 @@ const MoveHistory = ({moveList}: Props) => {
         <section className='w-100 flex flex-wrap'>
             {moveList.map((move, idx) => (
                 <span key={idx} className='textxs mx-1'>
+                    {idx % 2 === 0 && <span className='mr-1 ml-2 text-gray-400'>{idx / 2+1}</span>}
                     {pieceNotation[move.piece]}
                     {columnNotation[move.to.column]}
                     {move.to.row + 1}
