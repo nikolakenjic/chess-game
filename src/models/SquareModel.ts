@@ -1,7 +1,7 @@
 import { CoordinateModel } from './CoordinateModel';
 import PieceModel from './piece/PieceModel';
 
-const columnNotation: Record<number, string> = {
+export const columnNotation: Record<number, string> = {
   0: 'a',
   1: 'b',
   2: 'c',

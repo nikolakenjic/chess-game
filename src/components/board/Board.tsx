@@ -52,7 +52,7 @@ const Board = ({ board, playerTurn, playingAsWhite, movePiece }: Props) => {
 
   return (
     <>
-      <section className="grid grid-rows-8 grid-cols-8 max-w-3xl w-3/4 aspect-square my-4 mx-auto border shadow">
+      <section className="grid grid-rows-8 grid-cols-8 w-100 aspect-square my-2 mx-auto border shadow">
         {board.squares.map((square: SquareModel) => (
           <div
             className={`w-full h-full col-start-${
