@@ -18,6 +18,7 @@ const App = () => {
         const {piece} = currentSquare;
 
         if (piece) {
+            piece.setHasMoved(true)
             board.updateSquarePiece(finalSquare.coordinates, piece);
             board.updateSquarePiece(currentSquare.coordinates, null);
             setMoveHistoryList((currentValue) => [
