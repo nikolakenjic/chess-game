@@ -7,4 +7,5 @@ export default interface MoveModel {
   to: CoordinateModel;
   piece: PieceType;
   color: PlayerColor;
+  captured?: PieceType
 }

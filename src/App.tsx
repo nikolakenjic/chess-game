@@ -27,6 +27,7 @@ const App = () => {
                     to: finalSquare.coordinates,
                     piece: piece.type,
                     color: playerTurn,
+                    captured: finalSquare.piece?.type
                 },
             ]);
 
