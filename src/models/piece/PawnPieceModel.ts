@@ -1,10 +1,10 @@
 import { PieceType } from '../../constants/piece-info';
 import { checkValidMove } from '../../services/move-service';
 import BoardModel from '../BoardModel';
-import { CoordinateModel } from '../CoordinateModel';
 import { PlayerColor } from '../PlayerModel';
 import SquareModel from '../SquareModel';
 import PieceModel from './PieceModel';
+import {MoveModel} from "../MoveModel.ts";
 
 export default class PawnPieceModel extends PieceModel {
   constructor(color: PlayerColor) {
@@ -14,8 +14,8 @@ export default class PawnPieceModel extends PieceModel {
   getValidMoves = (
     board: BoardModel,
     square: SquareModel
-  ): Array<CoordinateModel | null> => {
-    const validMoves: Array<CoordinateModel | null> = [];
+  ): Array<MoveModel | null> => {
+    const validMoves: Array<MoveModel | null> = [];
     const { row, column } = square.coordinates;
 
     if (square.piece?.color === PlayerColor.WHITE) {

@@ -1,6 +1,7 @@
 import BoardModel from '../models/BoardModel';
 import {CoordinateModel} from '../models/CoordinateModel';
 import SquareModel from '../models/SquareModel';
+import {MoveModel} from "../models/MoveModel.ts";
 
 export interface MoveCheck {
     move: CoordinateModel | null;
@@ -89,11 +90,11 @@ export const getValidMovesForRowAndColumn = (
 export const getValidMoves = (
     board: BoardModel,
     square: SquareModel | null
-): Array<CoordinateModel> => {
+): Array<MoveModel> => {
     if (!square || !square?.piece) return [];
 
     const {row, column} = square.coordinates;
-    const validMoves: Array<CoordinateModel | null> = square.piece.getValidMoves(
+    const validMoves: Array<MoveModel | null> = square.piece.getValidMoves(
         board,
         square
     );

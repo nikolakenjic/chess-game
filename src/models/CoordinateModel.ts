@@ -1,4 +1,4 @@
 export interface CoordinateModel {
-  row: number;
-  column: number;
+    row: number;
+    column: number;
 }

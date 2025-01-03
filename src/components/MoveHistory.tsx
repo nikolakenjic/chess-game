@@ -1,9 +1,9 @@
-import MoveModel from '../models/MoveModel';
+import {MoveHistoryModel} from '../models/MoveModel';
 import {pieceNotation} from "../constants/piece-info.ts";
 import {columnNotation} from "../models/SquareModel.ts";
 
 interface Props {
-    moveList: Array<MoveModel>;
+    moveList: Array<MoveHistoryModel>;
 }
 
 const MoveHistory = ({moveList}: Props) => {

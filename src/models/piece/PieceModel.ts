@@ -1,8 +1,8 @@
 import {pieceIcons, PieceType} from '../../constants/piece-info';
 import BoardModel from '../BoardModel';
-import {CoordinateModel} from '../CoordinateModel';
 import {PlayerColor} from '../PlayerModel';
 import SquareModel from '../SquareModel';
+import {MoveModel} from "../MoveModel.ts";
 
 export default abstract class PieceModel {
     readonly type: PieceType;
@@ -30,5 +30,5 @@ export default abstract class PieceModel {
     abstract getValidMoves(
         board: BoardModel,
         square: SquareModel
-    ): Array<CoordinateModel | null>;
+    ): Array<MoveModel | null>;
 }

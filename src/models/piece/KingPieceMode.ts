@@ -1,10 +1,10 @@
 import {PieceType} from '../../constants/piece-info';
 import {checkValidMove} from '../../services/move-service';
 import BoardModel from '../BoardModel';
-import {CoordinateModel} from '../CoordinateModel';
 import {PlayerColor} from '../PlayerModel';
 import SquareModel from '../SquareModel';
 import PieceModel from './PieceModel';
+import {MoveModel} from "../MoveModel.ts";
 
 export default class KingPieceModel extends PieceModel {
     constructor(color: PlayerColor) {
@@ -14,8 +14,8 @@ export default class KingPieceModel extends PieceModel {
     getValidMoves = (
         board: BoardModel,
         square: SquareModel
-    ): Array<CoordinateModel | null> => {
-        const validMoves: Array<CoordinateModel | null> = [];
+    ): Array<MoveModel | null> => {
+        const validMoves: Array<MoveModel | null> = [];
         const {row, column} = square.coordinates;
 
         // Left right top bottom
@@ -49,10 +49,10 @@ export default class KingPieceModel extends PieceModel {
         // Castle
         if (!this.hasMoved) {
             const kingRow = this.isWhitePiece() ? 0 : 7
-        //     King side
-            const squareRookKing = board.getSquareOnCoordinate({row:kingRow, column: 7})
+            //     King side
+            const squareRookKing = board.getSquareOnCoordinate({row: kingRow, column: 7})
             const squareRookKingPiece = squareRookKing?.piece;
-            if(squareRookKingPiece && squareRookKingPiece.type === PieceType.ROOK && !squareRookKingPiece.hasMoved) {
+            if (squareRookKingPiece && squareRookKingPiece.type === PieceType.ROOK && !squareRookKingPiece.hasMoved) {
                 validMoves.push({row: kingRow, column: 6});
             }
         }
