@@ -1,10 +1,12 @@
 import BoardModel from '../models/BoardModel';
 import {CoordinateModel} from '../models/CoordinateModel';
 import SquareModel from '../models/SquareModel';
-import {MoveModel} from "../models/MoveModel.ts";
+import {MoveModel, MoveType} from "../models/MoveModel.ts";
+import PieceModel from "../models/piece/PieceModel.ts";
+import {PieceType} from "../constants/piece-info.ts";
 
 export interface MoveCheck {
-    move: CoordinateModel | null;
+    move: MoveModel | null;
     shouldBreak: boolean;
 }
 
@@ -14,6 +16,10 @@ export interface RowColumnValidMoveCheck {
     increment: number;
     rowIncrement: number;
     columnIncrement: number;
+}
+
+export const checkIfRookAndNotMoved = (piece: PieceModel | undefined| null): boolean => {
+    return !!piece && piece.type === PieceType.ROOK && !piece.hasMoved
 }
 
 export const checkValidMove = (
@@ -35,11 +41,11 @@ export const checkValidMove = (
             targetSquare?.piece.color !== square.piece?.color &&
             !blockIfOppositeColor
         ) {
-            moveCheck.move = targetCoordinate;
+            moveCheck.move = {...targetCoordinate, type: MoveType.NORMAL};
         }
         moveCheck.shouldBreak = true;
     } else if (!blockIsEmpty) {
-        moveCheck.move = targetCoordinate;
+        moveCheck.move = {...targetCoordinate, type: MoveType.NORMAL};
     }
 
     return moveCheck;
@@ -55,8 +61,8 @@ export const getValidMovesForRowAndColumn = (
         rowIncrement,
         columnIncrement,
     }: RowColumnValidMoveCheck
-): Array<CoordinateModel> => {
-    const validMoves: Array<CoordinateModel> = [];
+): Array<MoveModel> => {
+    const validMoves: Array<MoveModel> = [];
     const {row, column} = square.coordinates;
 
     for (
@@ -65,16 +71,16 @@ export const getValidMovesForRowAndColumn = (
         i += increment
     ) {
         const count = Math.abs(i - startPos) + 1;
-        const newCoordinates: CoordinateModel = {row, column};
+        const newMove: MoveModel = {row, column, type: MoveType.NORMAL};
 
         if (rowIncrement) {
-            newCoordinates.row = row + count * rowIncrement;
+            newMove.row = row + count * rowIncrement;
         }
         if (columnIncrement) {
-            newCoordinates.column = column + count * columnIncrement;
+            newMove.column = column + count * columnIncrement;
         }
 
-        const possibleMove = checkValidMove(board, square, newCoordinates);
+        const possibleMove = checkValidMove(board, square, newMove);
         if (possibleMove.move) {
             validMoves.push(possibleMove.move);
         }

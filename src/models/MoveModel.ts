@@ -19,5 +19,5 @@ export  interface MoveHistoryModel {
 }
 
 export interface MoveModel extends CoordinateModel {
-  moveType: MoveType;
+  type: MoveType;
 }
