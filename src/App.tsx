@@ -3,7 +3,7 @@ import {PlayerColor} from './models/PlayerModel';
 import Board from './components/board/Board';
 import BoardModel from './models/BoardModel';
 import SquareModel from './models/SquareModel';
-import {MoveHistoryModel} from './models/MoveModel';
+import {MoveHistoryModel, MoveModel, MoveType} from './models/MoveModel';
 import MoveHistory from './components/MoveHistory';
 
 const App = () => {
@@ -13,7 +13,8 @@ const App = () => {
 
     const movePiece = (
         currentSquare: SquareModel,
-        finalSquare: SquareModel
+        finalSquare: SquareModel,
+        move:MoveModel | undefined
     ): void => {
         const {piece} = currentSquare;
 
@@ -21,6 +22,20 @@ const App = () => {
             piece.setHasMoved(true)
             board.updateSquarePiece(finalSquare.coordinates, piece);
             board.updateSquarePiece(currentSquare.coordinates, null);
+            if(move?.type === MoveType.CASTLE_KING_SIDE) {
+                //     todo
+                const kingRow = piece.isWhitePiece() ? 0 : 7
+                const rookColumn = 7
+                const rookPiece = board.getSquareOnCoordinate({row:kingRow, column:rookColumn})?.piece
+                rookPiece?.setHasMoved(true)
+                board.updateSquarePiece({row:kingRow, column: 5}, rookPiece || null);
+                board.updateSquarePiece({row:kingRow, column:rookColumn}, null)
+            }
+            if(move?.type === MoveType.CASTLE_QUEEN_SIDE) {
+                //     Todo
+            }
+
+
             setMoveHistoryList((currentValue) => [
                 ...currentValue,
                 {

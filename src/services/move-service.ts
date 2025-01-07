@@ -20,7 +20,6 @@ export interface RowColumnValidMoveCheck {
 
 export const checkIfRookAndNotMoved = (piece: PieceModel | undefined| null): boolean => {
     return !!piece && piece.type === PieceType.ROOK && !piece.hasMoved
-}
 
 export const checkValidMove = (
     board: BoardModel,
